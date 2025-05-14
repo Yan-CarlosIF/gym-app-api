@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String    @id @default(uuid())
+  email      String    @unique
+  name       String
+  password   String
+  avatar_url String?
+  Workout    Workout[]
+
+  @@map("user")
+}
+
+model Workout {
+  id        String            @id @default(uuid())
+  name      String
+  user      User              @relation(fields: [userId], references: [id])
+  userId    String
+  exercises WorkoutExercise[]
+
+  @@map("workout")
+}
+
+model Exercise {
+  id       String            @id @default(uuid())
+  name     String
+  workouts WorkoutExercise[]
+  muscles  MuscleExercise[]
+
+  @@map("exercise")
+}
+
+model WorkoutExercise {
+  id         String   @id @default(uuid())
+  workout    Workout  @relation(fields: [workoutId], references: [id])
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  sequence   Int
+  sets       Int
+  reps       Int
+  workoutId  String
+  exerciseId String
+
+  @@map("workout_exercise")
+}
+
+model Muscle {
+  id        String           @id @default(uuid())
+  name      String
+  exercises MuscleExercise[]
+
+  @@map("muscle")
+}
+
+model MuscleExercise {
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  muscle     Muscle   @relation(fields: [muscleId], references: [id])
+  exerciseId String
+  muscleId   String
+
+  @@id([exerciseId, muscleId])
+  @@map("muscle_exercise")
+}
