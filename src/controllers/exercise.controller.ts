@@ -2,6 +2,24 @@ import { FastifyReply, FastifyRequest } from "fastify";
 
 import { prisma } from "@/lib/prisma";
 
+export async function getExercises(req: FastifyRequest, reply: FastifyReply) {
+  try {
+    const userId = (req.user as { id: string }).id;
+
+    const exercises = await prisma.exercise.findMany({
+      where: {
+        userId,
+      },
+    });
+
+    return reply.status(200).send(exercises);
+  } catch (err) {
+    return reply
+      .status(404)
+      .send({ message: "Não foi possivel acessar os exercícios", err });
+  }
+}
+
 type muscles =
   | "Peito"
   | "Costas"
@@ -65,5 +83,80 @@ export async function addExercise(
     return reply
       .status(400)
       .send({ mensage: "Não foi possível criar o exercício", err });
+  }
+}
+
+export async function deleteExercises(
+  req: FastifyRequest,
+  reply: FastifyReply
+) {
+  try {
+    const userId = (req.user as { id: string }).id;
+
+    await prisma.exercise.deleteMany({
+      where: {
+        userId,
+      },
+    });
+
+    return reply.status(204).send({ message: "Deletado com sucesso" });
+  } catch (err) {
+    return reply
+      .status(400)
+      .send({ message: "Não foi possivel deletar os exercícios", err });
+  }
+}
+
+export async function deleteExercise(
+  req: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply
+) {
+  try {
+    const userId = (req.user as { id: string }).id;
+    const { id } = req.params;
+
+    await prisma.exercise.delete({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    return reply.status(204).send({ message: "Deletado com sucesso" });
+  } catch (err) {
+    return reply
+      .status(400)
+      .send({ message: "Não foi possivel deletar o exercício", err });
+  }
+}
+
+export async function updateExercise(
+  req: FastifyRequest<{
+    Body: { name: string; img: string };
+    Params: { id: string };
+  }>,
+  reply: FastifyReply
+) {
+  try {
+    const userId = (req.user as { id: string }).id;
+    const { img, name } = req.body;
+    const { id } = req.params;
+
+    const exercise = await prisma.exercise.update({
+      where: {
+        userId,
+        id,
+      },
+      data: {
+        img,
+        name,
+      },
+    });
+
+    return reply.status(200).send(exercise);
+  } catch (err) {
+    return reply
+      .status(400)
+      .send({ message: "Erro ao atualizar o exercício", err });
   }
 }

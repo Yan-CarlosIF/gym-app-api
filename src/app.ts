@@ -7,7 +7,7 @@ import { exerciseRoutes } from "./routes/exercise.routes";
 import { userRoutes } from "./routes/user.routes";
 import { workoutRoutes } from "./routes/workout.routes";
 
-const PORT = 3001;
+const PORT = 3000;
 
 export const app = fastify();
 
