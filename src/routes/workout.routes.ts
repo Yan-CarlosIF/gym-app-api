@@ -3,6 +3,7 @@ import { FastifyInstance } from "fastify";
 import {
   addExerciseToWorkout,
   addWorkout,
+  deleteWorkout,
   deleteWorkouts,
   getWorkouts,
 } from "@/controllers/workout.controller";
@@ -23,4 +24,10 @@ export function workoutRoutes(app: FastifyInstance) {
     handler: addExerciseToWorkout,
   });
   app.delete("/delete", { onRequest: [authenticate] }, deleteWorkouts);
+  app.route({
+    method: "DELETE",
+    url: "/delete/:id",
+    onRequest: [authenticate],
+    handler: deleteWorkout,
+  });
 }

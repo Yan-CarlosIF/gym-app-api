@@ -56,8 +56,9 @@ model WorkoutExercise {
   sets       Int
   reps       Int
   workoutId  String
-  exerciseId String   @unique
+  exerciseId String
 
+  @@unique([workoutId, exerciseId])
   @@map("workout_exercise")
 }
 

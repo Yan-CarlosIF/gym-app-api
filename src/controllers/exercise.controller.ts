@@ -104,13 +104,11 @@ export async function deleteExercises(
   try {
     const userId = (req.user as { id: string }).id;
 
-    await prisma.exercise.deleteMany({
-      where: {
-        userId,
-      },
-    });
+    await prisma.exercise.deleteMany({ where: { userId } });
 
-    return reply.status(204).send({ message: "Deletado com sucesso" });
+    return reply
+      .status(204)
+      .send({ message: "Exercícios deletados com sucesso" });
   } catch (err) {
     return reply
       .status(400)
@@ -133,7 +131,9 @@ export async function deleteExercise(
       },
     });
 
-    return reply.status(204).send({ message: "Deletado com sucesso" });
+    return reply
+      .status(204)
+      .send({ message: "Exercício deletado com sucesso" });
   } catch (err) {
     return reply
       .status(400)
