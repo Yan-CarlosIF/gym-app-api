@@ -15,12 +15,13 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(uuid())
-  email      String    @unique
+  id         String     @id @default(uuid())
+  email      String     @unique
   name       String
   password   String
   avatar_url String?
-  Workout    Workout[]
+  workout    Workout[]
+  exercises  Exercise[]
 
   @@map("user")
 }
@@ -38,36 +39,39 @@ model Workout {
 model Exercise {
   id       String            @id @default(uuid())
   name     String
+  user     User              @relation(fields: [userId], references: [id])
+  userId   String
   workouts WorkoutExercise[]
   muscles  MuscleExercise[]
+  img      String?
 
   @@map("exercise")
 }
 
 model WorkoutExercise {
   id         String   @id @default(uuid())
-  workout    Workout  @relation(fields: [workoutId], references: [id])
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  workout    Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   sequence   Int
   sets       Int
   reps       Int
   workoutId  String
-  exerciseId String
+  exerciseId String   @unique
 
   @@map("workout_exercise")
 }
 
 model Muscle {
   id        String           @id @default(uuid())
-  name      String
+  name      String           @unique
   exercises MuscleExercise[]
 
   @@map("muscle")
 }
 
 model MuscleExercise {
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
-  muscle     Muscle   @relation(fields: [muscleId], references: [id])
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  muscle     Muscle   @relation(fields: [muscleId], references: [id], onDelete: Cascade)
   exerciseId String
   muscleId   String
 
