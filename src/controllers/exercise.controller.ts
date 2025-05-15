@@ -10,6 +10,17 @@ export async function getExercises(req: FastifyRequest, reply: FastifyReply) {
       where: {
         userId,
       },
+      include: {
+        muscles: {
+          select: {
+            muscle: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     return reply.status(200).send(exercises);
